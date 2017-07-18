@@ -14,13 +14,16 @@ let Ids = {
 					<div class="first-spa-shell-foot"></div>
 					<div class="first-spa-shell-chat" id="${Ids.firstSpaShellChatId.substr(1)}"></div>
 					<div class="first-spa-shell-modal"></div>`,
-		chat_extend_time : 1000,
-		chat_retract_time : 300, 
-		hat_extend_height : 450,
-		chat_retract_height : 15
+		chatExtendTime: 1000,
+		chatRetractTime: 300,
+		chatExtendHeight: 450,
+		chatRetractHeight: 15,
+		chatExtendedTitle: 'Щелкните, чтобы свернуть',
+		chatRetractedTitle: 'Щелкните, чтобы раскрыть'
 	},
 	stateMap = {
-		$container: null
+		$container: null,
+		isChatRetracted: true
 	},
 	jqueryMap = {};
 
@@ -34,13 +37,50 @@ function setJqueryMap() {
 
 	jqueryMap = {
 		$container: $container,
-		$chat : $container.find(Ids.firstSpaShellChatId),
+		$chat: $container.find(Ids.firstSpaShellChatId),
 	};
+}
+
+function toggleChat(doExtend, callback) {
+	let chatHeight = jqueryMap.$chat.height(),
+		chatOpen = chatHeight === configMap.chatExtendHeight,
+		chatClosed = chatHeight === configMap.chatRetractHeight,
+		chatSliding = !chatOpen && !chatClosed;
+
+	if (chatSliding) return false;
+
+	if (doExtend) {
+		jqueryMap.$chat.animate(
+			{height: configMap.chatExtendHeight},
+			configMap.chatExtendTime,
+			() => {
+				jqueryMap.$chat.attr('title', configMap.chatExtendedTitle);
+				stateMap.isChatRetracted = false;
+				if (callback) callback(jqueryMap.$chat)
+			}
+		);
+		return true;
+	}
+
+	jqueryMap.$chat.animate(
+		{height: configMap.chatRetractHeight},
+		configMap.chatRetractTime,
+		() => {
+			jqueryMap.$chat.attr('title', configMap.chatRetractedTitle);
+			stateMap.isChatRetracted = true;
+			if (callback) callback(jqueryMap.$chat);
+		}
+	);
+	return true;
 }
 
 //--------------------- КОНЕЦ МЕТОДОВ DOM ----------------------
 
 //---------------- НАЧАЛО ОБРАБОТЧИКОВ СОБЫТИЙ -----------------
+function onClickChat(event) {
+	toggleChat(stateMap.isChatRetracted);
+	return false;
+};
 //----------------- КОНЕЦ ОБРАБОТЧИКОВ СОБЫТИЙ -----------------
 
 //------------------- НАЧАЛО ОТКРЫТЫХ МЕТОДОВ ------------------
@@ -49,6 +89,11 @@ function initModule($container) {
 	stateMap.$container = $container;
 	$container.html(configMap.mainHtml);
 	setJqueryMap();
+
+	stateMap.isChatRetracted = true;
+	jqueryMap.$chat
+		.attr('title', configMap.chatRetractedTitle)
+		.click(onClickChat);
 }
 //------------------- КОНЕЦ ОТКРЫТЫХ МЕТОДОВ -------------------
 
