@@ -1,0 +1,102 @@
+.first-spa-shell-head,
+.first-spa-shell-head-logo,
+.first-spa-shell-head-acct,
+.first-spa-shell-head-search,
+.first-spa-shell-main,
+.first-spa-shell-main-nav,
+.first-spa-shell-main-content,
+.first-spa-shell-foot,
+.first-spa-shell-chat,
+.first-spa-shell-modal {
+	position: absolute
+}
+
+.first-spa-shell-head {
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 40px;
+}
+
+.first-spa-shell-head-logo {
+	top: 4px;
+	left: 4px;
+	height: 32px;
+	width: 128px;
+	background: orange;
+}
+
+.first-spa-shell-head-acct {
+	top: 4px;
+	right: 0;
+	width: 64px;
+	height: 32px;
+	background: green;
+}
+
+.first-spa-shell-head-search {
+	top: 4px;
+	right: 64px;
+	width: 248px;
+	height: 32px;
+	background: blue;
+}
+
+.first-spa-shell-main {
+	top: 40px;
+	left: 0;
+	bottom: 40px;
+	right: 0;
+}
+
+.first-spa-shell-main-content, .first-spa-shell-main-nav {
+	top: 0;
+	bottom: 0;
+}
+
+.first-spa-shell-main-nav {
+	width: 250px;
+	background: #eeeeee;
+}
+
+.first-spa-x-closed .first-spa-shell-main-nav {
+	width: 0;
+}
+
+.first-spa-shell-main-content {
+	left: 250px;
+	right: 0;
+	background: #dddddd;
+}
+
+.first-spa-x-closed .first-spa-shell-main-content {
+	left: 0;
+}
+
+.first-spa-shell-foot {
+	bottom: 0;
+	left: 0;
+	right: 0;
+	height: 40px;
+}
+
+.first-spa-shell-chat {
+	bottom: 0;
+	right: 0;
+	width: 300px;
+	height: 15px;
+	background: red;
+	z-index: 1;
+}
+
+.first-spa-shell-modal {
+	margin-top: -200px;
+	margin-left: -200px;
+	top: 50%;
+	left: 50%;
+	width: 400px;
+	height: 400px;
+	background: #ffffff;
+	border-radius: 3px;
+	z-index: 2;
+}
