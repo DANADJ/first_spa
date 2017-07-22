@@ -1,7 +1,8 @@
-let Ids = {
-		firstSpaShellChatId: '#first-spa-shell-chat',
-	},
-	configMap = {
+const Ids = {
+	firstSpaShellChatId: '#first-spa-shell-chat',
+};
+
+let configMap = {
 		anchorSchemaMap: {
 			chat: {
 				open: true,
@@ -24,8 +25,8 @@ let Ids = {
 		chatRetractTime: 300,
 		chatExtendHeight: 450,
 		chatRetractHeight: 15,
-		chatExtendedTitle: 'Щелкните, чтобы свернуть',
-		chatRetractedTitle: 'Щелкните, чтобы раскрыть'
+		chatExtendedTitle: 'Click to close',
+		chatRetractedTitle: 'Click to open'
 	},
 	stateMap = {
 		$container: null,
@@ -35,14 +36,21 @@ let Ids = {
 	jqueryMap = {};
 
 
-//----------------- НАЧАЛО СЛУЖЕБНЫХ МЕТОДОВ -------------------
+/**
+ * Start of utility
+ */
 function copyAnchorMap() {
 	return $.extend(true, {}, stateMap.anchor_map);
 }
-//------------------ КОНЕЦ СЛУЖЕБНЫХ МЕТОДОВ -------------------
 
-//-------------------- НАЧАЛО МЕТОДОВ DOM ----------------------
+/**
+ * Start of DOM functions
+ */
 
+/**
+ * @description - The function changes URL hash
+ * @function changeAnchorPart
+ */
 function changeAnchorPart(argMap) {
 	let anchorMapRevise = copyAnchorMap(),
 		boolReturn = true,
@@ -51,15 +59,13 @@ function changeAnchorPart(argMap) {
 
 	KEYVAL:
 		for (keyName in argMap) {
-			if (argMap.hasOwnProperty(keyName)) {// пропустить зависимые ключи
+			if (argMap.hasOwnProperty(keyName)) {
 				if (keyName.indexOf('_') === 0) {
 					continue KEYVAL;
 				}
 
-				// обновить значение независимого ключа
 				anchorMapRevise[keyName] = argMap[keyName];
 
-				// обновить соответствующий зависимый ключ
 				keyNameDep = '_' + keyName;
 
 				if (argMap[keyNameDep]) {
@@ -70,28 +76,26 @@ function changeAnchorPart(argMap) {
 				}
 			}
 		}
-	// Конец объединения изменений в хэше якорей
 
-	// Начало попытки обновления URI;
-	// в случае ошибки восстановить исходное состояние
 	try {
 		$.uriAnchor.setAnchor(anchorMapRevise);
 	} catch (error) {
-		// восстановить исходное состояние в URI
 		$.uriAnchor.setAnchor(stateMap.anchorMap, null, true);
 		boolReturn = false;
 	}
-	// Конец попытки обновления URI...
 
 	return boolReturn;
 }
 
-function onHashchange(event) {
+/**
+ * @description - The callback is called when URL hash is changed
+ * @callback onHashchange
+ */
+function onHashchange() {
 	let anchorMapPrevious = copyAnchorMap(),
 		anchorMapProposed = null,
 		s_chatProposed = null;
 
-	// пытаемся разобрать якорь
 	try {
 		anchorMapProposed = $.uriAnchor.makeAnchorMap();
 	} catch (error) {
@@ -100,8 +104,6 @@ function onHashchange(event) {
 	}
 	stateMap.anchorMap = anchorMapProposed;
 
-
-	// Начало изменения компонента Chat
 	if (!anchorMapPrevious || anchorMapPrevious._s_chat !== anchorMapProposed._s_chat) {
 		s_chatProposed = anchorMapProposed.chat;
 		switch (s_chatProposed) {
@@ -118,11 +120,13 @@ function onHashchange(event) {
 		}
 	}
 
-	// Конец изменения компонента Chat
 	return false;
 }
 
-
+/**
+ * @description - The function finds jQuery objects and saves them in jqueryMap object
+ * @function setJqueryMap
+ */
 function setJqueryMap() {
 	let $container = stateMap.$container;
 
@@ -172,20 +176,25 @@ function toggleChat(doExtend, callback) {
 	return true;
 }
 
-//--------------------- КОНЕЦ МЕТОДОВ DOM ----------------------
+/**
+ * Start of handlers functions
+ */
 
-//---------------- НАЧАЛО ОБРАБОТЧИКОВ СОБЫТИЙ -----------------
-function onClickChat() {
+/**
+ * @description - The callback updates URL when the chat window opens or closes
+ * @callback onClickChatCb
+ */
+function onClickChatCb() {
 	changeAnchorPart({
 		chat: ( stateMap.isChatRetracted ? 'open' : 'closed' )
 	});
 
 	return false;
 }
-//----------------- КОНЕЦ ОБРАБОТЧИКОВ СОБЫТИЙ -----------------
 
-//------------------- НАЧАЛО ОТКРЫТЫХ МЕТОДОВ ------------------
-
+/**
+ * Public API functions
+ */
 function initModule($container) {
 	stateMap.$container = $container;
 	$container.html(configMap.mainHtml);
@@ -194,7 +203,7 @@ function initModule($container) {
 	stateMap.isChatRetracted = true;
 	jqueryMap.$chat
 		.attr('title', configMap.chatRetractedTitle)
-		.click(onClickChat);
+		.click(onClickChatCb);
 
 	$.uriAnchor.configModule({
 		schema_map: configMap.anchorSchemaMap
@@ -202,8 +211,10 @@ function initModule($container) {
 
 	$(window).bind('hashchange', onHashchange).trigger('hashchange');
 }
-//------------------- КОНЕЦ ОТКРЫТЫХ МЕТОДОВ -------------------
 
+/**
+ * Exported object
+ */
 export const Shell = {
 	initModule
 };

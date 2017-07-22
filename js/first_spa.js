@@ -77,8 +77,9 @@
 	});
 	var Ids = {
 		firstSpaShellChatId: '#first-spa-shell-chat'
-	},
-	    configMap = {
+	};
+
+	var configMap = {
 		anchorSchemaMap: {
 			chat: {
 				open: true,
@@ -90,8 +91,8 @@
 		chatRetractTime: 300,
 		chatExtendHeight: 450,
 		chatRetractHeight: 15,
-		chatExtendedTitle: 'Щелкните, чтобы свернуть',
-		chatRetractedTitle: 'Щелкните, чтобы раскрыть'
+		chatExtendedTitle: 'Click to close',
+		chatRetractedTitle: 'Click to open'
 	},
 	    stateMap = {
 		$container: null,
@@ -100,14 +101,21 @@
 	},
 	    jqueryMap = {};
 
-	//----------------- НАЧАЛО СЛУЖЕБНЫХ МЕТОДОВ -------------------
+	/**
+	 * Start of utility
+	 */
 	function copyAnchorMap() {
 		return $.extend(true, {}, stateMap.anchor_map);
 	}
-	//------------------ КОНЕЦ СЛУЖЕБНЫХ МЕТОДОВ -------------------
 
-	//-------------------- НАЧАЛО МЕТОДОВ DOM ----------------------
+	/**
+	 * Start of DOM functions
+	 */
 
+	/**
+	 * @description - The function changes URL hash
+	 * @function changeAnchorPart
+	 */
 	function changeAnchorPart(argMap) {
 		var anchorMapRevise = copyAnchorMap(),
 		    boolReturn = true,
@@ -116,15 +124,12 @@
 
 		KEYVAL: for (keyName in argMap) {
 			if (argMap.hasOwnProperty(keyName)) {
-				// пропустить зависимые ключи
 				if (keyName.indexOf('_') === 0) {
 					continue KEYVAL;
 				}
 
-				// обновить значение независимого ключа
 				anchorMapRevise[keyName] = argMap[keyName];
 
-				// обновить соответствующий зависимый ключ
 				keyNameDep = '_' + keyName;
 
 				if (argMap[keyNameDep]) {
@@ -135,28 +140,26 @@
 				}
 			}
 		}
-		// Конец объединения изменений в хэше якорей
 
-		// Начало попытки обновления URI;
-		// в случае ошибки восстановить исходное состояние
 		try {
 			$.uriAnchor.setAnchor(anchorMapRevise);
 		} catch (error) {
-			// восстановить исходное состояние в URI
 			$.uriAnchor.setAnchor(stateMap.anchorMap, null, true);
 			boolReturn = false;
 		}
-		// Конец попытки обновления URI...
 
 		return boolReturn;
 	}
 
-	function onHashchange(event) {
+	/**
+	 * @description - The callback is called when URL hash is changed
+	 * @callback onHashchange
+	 */
+	function onHashchange() {
 		var anchorMapPrevious = copyAnchorMap(),
 		    anchorMapProposed = null,
 		    s_chatProposed = null;
 
-		// пытаемся разобрать якорь
 		try {
 			anchorMapProposed = $.uriAnchor.makeAnchorMap();
 		} catch (error) {
@@ -165,7 +168,6 @@
 		}
 		stateMap.anchorMap = anchorMapProposed;
 
-		// Начало изменения компонента Chat
 		if (!anchorMapPrevious || anchorMapPrevious._s_chat !== anchorMapProposed._s_chat) {
 			s_chatProposed = anchorMapProposed.chat;
 			switch (s_chatProposed) {
@@ -182,10 +184,13 @@
 			}
 		}
 
-		// Конец изменения компонента Chat
 		return false;
 	}
 
+	/**
+	 * @description - The function finds jQuery objects and saves them in jqueryMap object
+	 * @function setJqueryMap
+	 */
 	function setJqueryMap() {
 		var $container = stateMap.$container;
 
@@ -227,27 +232,32 @@
 		return true;
 	}
 
-	//--------------------- КОНЕЦ МЕТОДОВ DOM ----------------------
+	/**
+	 * Start of handlers functions
+	 */
 
-	//---------------- НАЧАЛО ОБРАБОТЧИКОВ СОБЫТИЙ -----------------
-	function onClickChat() {
+	/**
+	 * @description - The callback updates URL when the chat window opens or closes
+	 * @callback onClickChatCb
+	 */
+	function onClickChatCb() {
 		changeAnchorPart({
 			chat: stateMap.isChatRetracted ? 'open' : 'closed'
 		});
 
 		return false;
 	}
-	//----------------- КОНЕЦ ОБРАБОТЧИКОВ СОБЫТИЙ -----------------
 
-	//------------------- НАЧАЛО ОТКРЫТЫХ МЕТОДОВ ------------------
-
+	/**
+	 * Public API functions
+	 */
 	function initModule($container) {
 		stateMap.$container = $container;
 		$container.html(configMap.mainHtml);
 		setJqueryMap();
 
 		stateMap.isChatRetracted = true;
-		jqueryMap.$chat.attr('title', configMap.chatRetractedTitle).click(onClickChat);
+		jqueryMap.$chat.attr('title', configMap.chatRetractedTitle).click(onClickChatCb);
 
 		$.uriAnchor.configModule({
 			schema_map: configMap.anchorSchemaMap
@@ -255,8 +265,10 @@
 
 		$(window).bind('hashchange', onHashchange).trigger('hashchange');
 	}
-	//------------------- КОНЕЦ ОТКРЫТЫХ МЕТОДОВ -------------------
 
+	/**
+	 * Exported object
+	 */
 	var Shell = exports.Shell = {
 		initModule: initModule
 	};
