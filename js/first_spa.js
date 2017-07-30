@@ -68,16 +68,32 @@
 
 /***/ }),
 /* 1 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
 		value: true
 	});
+	exports.Shell = undefined;
+
+	var _first_spa = __webpack_require__(2);
+
+	var _first_spa2 = __webpack_require__(3);
+
+	var _first_spa3 = __webpack_require__(4);
+
 	var Ids = {
 		firstSpaShellChatId: '#first-spa-shell-chat'
-	};
+	}; /**
+	    * @module FirstSpaShell
+	    * @author Valentin Gordienko <valentingordienkospb@gmail.com>
+	    */
+
+	/**
+	 *
+	 */
+
 
 	var configMap = {
 		anchorSchemaMap: {
@@ -170,6 +186,7 @@
 
 		if (!anchorMapPrevious || anchorMapPrevious._s_chat !== anchorMapProposed._s_chat) {
 			s_chatProposed = anchorMapProposed.chat;
+
 			switch (s_chatProposed) {
 				case 'open':
 					toggleChat(true);
@@ -252,6 +269,7 @@
 	 * Public API functions
 	 */
 	function initModule($container) {
+
 		stateMap.$container = $container;
 		$container.html(configMap.mainHtml);
 		setJqueryMap();
@@ -263,6 +281,9 @@
 			schema_map: configMap.anchorSchemaMap
 		});
 
+		_first_spa3.FirstSpaChat.configModule({});
+		_first_spa3.FirstSpaChat.initModule(jqueryMap.$chat);
+
 		$(window).bind('hashchange', onHashchange).trigger('hashchange');
 	}
 
@@ -270,6 +291,161 @@
 	 * Exported object
 	 */
 	var Shell = exports.Shell = {
+		initModule: initModule
+	};
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	/**
+	 * @module FirstSpaUtil
+	 * @author Valentin Gordienko <valentingordienkospb@gmail.com>
+	 */
+
+	/**
+	 *
+	 */
+	function makeError(nameText, msgText, data) {
+		var error = new Error();
+		error.name = nameText;
+		error.message = msgText;
+		if (data) error.data = data;
+
+		return error;
+	}
+
+	/**
+	 *
+	 *
+	 * @param {object} argMap - Settings object
+	 * @param {object} argMap.inputMap -
+	 * @param {object} argMap.settableMap -
+	 * @param {object} argMap.configMap -
+	 */
+	function setConfigMap(argMap) {
+		var inputMap = argMap.inputMap,
+		    settableMap = argMap.settableMap,
+		    configMap = argMap.configMap;
+		for (var keyName in inputMap) {
+			if (inputMap.hasOwnProperty(keyName)) {
+				if (settableMap.hasOwnProperty(keyName)) {
+					configMap[keyName] = inputMap[keyName];
+				} else {
+					throw makeError('Bad Input', 'Setting config key |' + keyName + '| is not supported');
+				}
+			}
+		}
+	}
+
+	/**
+	 * Exported object
+	 */
+	var FirstSpaUtil = exports.FirstSpaUtil = {
+		makeError: makeError,
+		setConfigMap: setConfigMap
+	};
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	/**
+	 * @module FirstSpaModel
+	 * @author Valentin Gordienko <valentingordienkospb@gmail.com>
+	 */
+
+	/**
+	 * Exported object
+	 */
+	var FirstSpaModel = exports.FirstSpaModel = {};
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	exports.FirstSpaChat = undefined;
+
+	var _first_spa = __webpack_require__(2);
+
+	var Ids = {}; /**
+	               * @module FirstSpaChat
+	               * @author Valentin Gordienko <valentingordienkospb@gmail.com>
+	               */
+
+	/**
+	 *
+	 */
+
+
+	var ConfigMap = {
+		settableMap: {}
+	};
+
+	var StateMap = {
+		$container: null
+	};
+
+	var JQueryMap = {};
+
+	var Markup = {
+		mainMarkup: '<div style="padding:1em; color:#fff;">Say hello to chat</div>'
+	};
+
+	/**
+	 * Start DOM functions
+	 */
+
+	/**
+	 *
+	 */
+	function setJqueryMap() {
+		var $container = StateMap.$container;
+		JQueryMap.$container = $container;
+	}
+
+	/**
+	 *
+	 */
+	function configModule(inputMap) {
+		_first_spa.FirstSpaUtil.setConfigMap({
+			inputMap: inputMap,
+			settableMap: ConfigMap.settableMap,
+			configMap: ConfigMap
+		});
+		return true;
+	}
+
+	/**
+	 *
+	 */
+	function initModule($container) {
+		$container.html(Markup.mainMarkup);
+		StateMap.$container = $container;
+		setJqueryMap();
+		return true;
+	}
+
+	/**
+	 * Exported object
+	 */
+	var FirstSpaChat = exports.FirstSpaChat = {
+		configModule: configModule,
 		initModule: initModule
 	};
 

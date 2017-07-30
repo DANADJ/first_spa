@@ -1,3 +1,15 @@
+/**
+ * @module FirstSpaShell
+ * @author Valentin Gordienko <valentingordienkospb@gmail.com>
+ */
+
+/**
+ *
+ */
+import {FirstSpaUtil} from './first_spa.util';
+import {FirstSpaModel} from './first_spa.model';
+import {FirstSpaChat} from './first_spa.chat';
+
 const Ids = {
 	firstSpaShellChatId: '#first-spa-shell-chat',
 };
@@ -106,6 +118,7 @@ function onHashchange() {
 
 	if (!anchorMapPrevious || anchorMapPrevious._s_chat !== anchorMapProposed._s_chat) {
 		s_chatProposed = anchorMapProposed.chat;
+
 		switch (s_chatProposed) {
 			case 'open' :
 				toggleChat(true);
@@ -196,6 +209,7 @@ function onClickChatCb() {
  * Public API functions
  */
 function initModule($container) {
+
 	stateMap.$container = $container;
 	$container.html(configMap.mainHtml);
 	setJqueryMap();
@@ -208,6 +222,9 @@ function initModule($container) {
 	$.uriAnchor.configModule({
 		schema_map: configMap.anchorSchemaMap
 	});
+
+	FirstSpaChat.configModule({});
+	FirstSpaChat.initModule(jqueryMap.$chat);
 
 	$(window).bind('hashchange', onHashchange).trigger('hashchange');
 }
